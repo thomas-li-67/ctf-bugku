@@ -1,7 +1,11 @@
+# coding=utf8
+
 import base64
 import re
 
 enstr = '''gndk€rlqhmtkwwp}z'''
+
+
 
 for p in range(len(enstr)):
     c=enstr[p]

