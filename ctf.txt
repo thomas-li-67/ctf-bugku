@@ -1848,3 +1848,60 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 162196        0x27994         JPEG image data, JFIF standard 1.02
 168370        0x291B2         Copyright string: "Copyright (c) 1998 Hewlett-Packard Company"
 
+用 binwalk -D 'jpeg' -e 2.jpg
+
+分离jpeg 26C48.jpeg 
+用 pythonocr.py 识别
+
+falg{NSCTF_e6532a34928a3d1dadd0b049d5a3cc57}
+
+==========================
+猜
+==========================
+用百度搜图，上传图片
+刘亦菲
+key{liuyifei}
+
+
+==========================
+Linux
+==========================
+直接打开 gz 文件 
+用写字板打开
+key{feb81d3834e2423c9903f4755464060b}
+
+
+=======================
+细心的大象
+=======================
+1.jpg 的详细信息中有 TVNEUzQ1NkFTRDEyM3p6
+用 python  -c "import base64; print base64.b64decode('TVNEUzQ1NkFTRDEyM3p6')"
+得到XSXSBUGKUADMIN
+用binwalk 分离 1.jpg 得到 压缩文件 用 上面密码打开 是一个隐写图 修改0x14开始的4字节高度
+BUGKU{a1e5aSA}
+
+
+=====================
+爆照(08067CTF)
+=====================
+用binwalk -e temp\8.jpg
+到1个zip 有 8 个文件
+1 8.jpg 
+  扫描得 bilibili
+2 888.jpg 
+  python  -c "import base64; print base64.b64decode('c2lsaXNpbGk=')"
+silisili
+3 8888.jpg 
+  binwalk -e 8888.jpg 得到 压缩文件  打开 扫描 panama
+
+  flag{bilibili_silisili_panama}
+
+
+  =====================
+  图穷匕见
+  =====================
+  用 extractfile.py 分离图形文件后的内容
+  用 plot01.py 绘图，得二维码
+
+
+  flag{40fc0a979f759c8892f4dc045e28b820}
