@@ -1925,4 +1925,52 @@ silisili
   ==================================
   题目给出一个 123.zip 的压缩包
   内容为 out0.zip - out67.zip 
-  打开要密码
+  打开要密码 ，每个文件只有 4 字节 ， 用 CRC32 crack
+  用 ctf017.py 
+  得到 
+  z5BzAAANAAAAAAAAAKo+egCAIwBJAAAAVAAAAAKGNKv+a2MdSR0zAwABAAAAQ01UCRUUy91BT5UkSNPoj5hFEVFBRvefHSBCfG0ruGnKnygsMyj8SBaZHxsYHY84LEZ24cXtZ01y3k1K1YJ0vpK9HwqUzb6u9z8igEr3dCCQLQAdAAAAHQAAAAJi0efVT2MdSR0wCAAgAAAAZmxhZy50eHQAsDRpZmZpeCB0aGUgZmlsZSBhbmQgZ2V0IHRoZSBmbGFnxD17AEAHAA==
+
+  base64 解码后，得到二进制内容
+  python -c "import base64;print base64.b64decode('z5BzAAANAAAAAAAAAKo+egCAIwBJAAAAVAAAAAKGNKv+a2MdSR0zAwABAAAAQ01UCRUUy91BT5UkSNPoj5hFEVFBRvefHSBCfG0ruGnKnygsMyj8SBaZHxsYHY84LEZ24cXtZ01y3k1K1YJ0vpK9HwqUzb6u9z8igEr3dCCQLQAdAAAAHQAAAAJi0efVT2MdSR0wCAAgAAAAZmxhZy50eHQAsDRpZmZpeCB0aGUgZmlsZSBhbmQgZ2V0IHRoZSBmbGFnxD17AEAHAA==')"
+
+  .....  fix the file and get the flag .....
+  发现底部有rar的文件尾C4 3D 7B 00 40 07 00
+
+  在开头加上 rar 文件头 52 61 72 21 1A 07 00
+  python -u -c "import sys;sys.stdout.write( ''.join([i.decode('hex') for i in '52 61 72 21 1A 07 00'.split()]))"  > temp\out.rar
+  python -u -c "import base64,sys;sys.stdout.write(base64.b64decode('z5BzAAANAAAAAAAAAKo+egCAIwBJAAAAVAAAAAKGNKv+a2MdSR0zAwABAAAAQ01UCRUUy91BT5UkSNPoj5hFEVFBRvefHSBCfG0ruGnKnygsMyj8SBaZHxsYHY84LEZ24cXtZ01y3k1K1YJ0vpK9HwqUzb6u9z8igEr3dCCQLQAdAAAAHQAAAAJi0efVT2MdSR0wCAAgAAAAZmxhZy50eHQAsDRpZmZpeCB0aGUgZmlsZSBhbmQgZ2V0IHRoZSBmbGFnxD17AEAHAA=='))" >> temp\out.rar
+
+ ++++++++++
+ python adds carriage returns when it tries to convert the binary stream to a string for writing,running python with the -u works.
+ ++++++++++
+
+ 解开rar 得到 flag{nev3r_enc0de_t00_sm4ll_fil3_w1th_zip}
+
+
+ ===========================
+ 一个普通的压缩包(xp0intCTF)
+ ===========================
+ 题目给的rar文件头有错 ， 提示 secret.png , 用 ctf018.py 分析 rar 文件
+ python ctf018.py
+0x0L 7
+0x72 0x7
+0x7L 7
+0x73 0xd
+0x14L 7
+0x74 0x2d
+===========================
+name size= 8  file size =  16  filename= flag.txt
+flag is not here
+0x51L 7
+0x7a 0x2f
+===========================
+name size= 10  file size =  5434  filename= secret.png
+
+0x7a 应改为 0x74
+
+解压 rar ，得到 secret.png  , 实际为 gif 文件
+用 gifprocess.py 分离 gif 两个帧 
+再用 java -jar stegsolve.jar 得到 两幅 一半的二维码，拼接，补全二维码，存为 solved-ok.bmp，扫描得到：
+flag{yanji4n_bu_we1shi}
+
+
